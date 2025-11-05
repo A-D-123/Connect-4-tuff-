@@ -16,7 +16,9 @@ namespace Connect_4
         private PictureBox counter = new PictureBox();
         private int counterPos;
 
-        public Game_Display()
+        private bool AI;
+
+        public Game_Display(bool playWithAI)
         {
             InitializeComponent();
 
@@ -25,13 +27,14 @@ namespace Connect_4
             YellowCounter = Image.FromFile(Path.Combine(projectRoot, "Images", "CounterYellow.png"));
 
             turn = 0;
-
+            
             counterPos = 0;
 
             createGameArray();
             
             playPlayerTurn(counter, turn);
 
+            AI = playWithAI;
         }
         private void Game_Display_Load(object sender, EventArgs e)
         {
@@ -84,12 +87,56 @@ namespace Connect_4
 
             this.Controls.Add(counter);
         }
+        private void playAITurn()
+        {
+            int temp = counterPos;
+
+
+
+            //counterPos = ?;
+
+
+
+
+
+
+            counter.Image = (turn % 2 == 0) ? RedCounter : YellowCounter;
+
+            if (displayPos[counterPos, 0].Image == null)
+            {
+                int index = 0;
+                while (displayPos[counterPos, index].Image == null)
+                {
+                    displayPos[counterPos, index].Image = counter.Image;
+                    if (index > 0)
+                    {
+                        displayPos[counterPos, index - 1].Image = null;
+                    }
+                    if (index != 5)
+                    {
+                        index++;
+                    }
+                }
+
+                counterPos = temp;
+
+                if (winDetect(displayPos, turn))
+                {
+                    Application.Exit();
+                }
+                else
+                {
+                    turn++;
+                    playPlayerTurn(counter, turn);
+                }
+            }
+        }
         private bool winDetect(PictureBox[,] displayPos, int turn)
         {
             int rows = 7;
             int cols = 6;
             int drawCount = 0;
-            int winCount;
+            bool win = false;
 
             for (int row = 0; row < rows; row++)
             {
@@ -99,20 +146,76 @@ namespace Connect_4
                     {
                         drawCount++;
                     }
-                    if (displayPos[row, col].Image != null && col < 4)
+                    if (displayPos[row, col].Image != null)
                     {
-                        winCount = 0;
-                        for (int index = 1; index < 4; index++)
+                        if (col <= cols - 4)
                         {
-                            if (displayPos[row, col].Image == displayPos[row, col + index].Image)
+                            win = true;
+                            for (int index = 1; index < 4; index++)
                             {
-                                winCount++;
+                                if (displayPos[row, col].Image != displayPos[row, col + index].Image)
+                                {
+                                    win = false;
+                                    break;
+                                }
+                            }
+                            if (win)
+                            {
+                                MessageBox.Show(((turn % 2 == 0) ? "Red" : "Yellow") + " wins!");
+                                return true;
                             }
                         }
-                        if (winCount == 4)
+                    if (row <= rows -4)
+                    {
+                        win = true;
+                        for (int index = 1; index < 4; index++)
+                        {
+                            if (displayPos[row, col].Image != displayPos[row + index, col].Image)
+                            {
+                                win = false;
+                                break;
+                            }
+                        }
+                        if (win)
                         {
                             MessageBox.Show(((turn % 2 == 0) ? "Red" : "Yellow") + " wins!");
                             return true;
+                        }
+                    }
+                    if (row <= rows -4  && col <= cols - 4)
+                    {
+                        win = true;
+                        for (int index = 1; index < 4; index++)
+                        {
+                            if (displayPos[row, col].Image != displayPos[row + index, col + index].Image)
+                            {
+                                win = false;
+                                break;
+                            }
+                        }
+                        if (win)
+                        {
+                            MessageBox.Show(((turn % 2 == 0) ? "Red" : "Yellow") + " wins!");
+                            return true;
+                        }
+                    }
+                        if (row >= rows - 3 && col <= cols - 4)
+                        {
+                            win = true;
+                            for (int index = 1; index < 4; index++)
+                            {
+
+                                if (displayPos[row, col].Image != displayPos[row - index, col + index].Image)
+                                {
+                                    win = false;
+                                    break;
+                                }
+                            }
+                            if (win)
+                            {
+                                MessageBox.Show(((turn % 2 == 0) ? "Red" : "Yellow") + " wins!");
+                                return true;
+                            }
                         }
                     }
                 }
@@ -122,9 +225,6 @@ namespace Connect_4
                 MessageBox.Show("Draw!");
                 return true;
             }
-
-
-
 
             return false;
         }
@@ -160,7 +260,14 @@ namespace Connect_4
                     if (winDetect(displayPos, turn) == false)
                     {
                         turn++;
-                        playPlayerTurn(counter, turn);
+                        if (AI)
+                        {
+                            playAITurn();
+                        }
+                        else
+                        {
+                            playPlayerTurn(counter, turn);
+                        }
                     }
                     else
                     {

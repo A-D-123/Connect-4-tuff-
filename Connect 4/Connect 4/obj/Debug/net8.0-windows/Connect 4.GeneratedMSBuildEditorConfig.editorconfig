@@ -14,6 +14,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Connect_4
-build_property.ProjectDir = C:\Users\Alex\source\repos\Connect 4\Connect 4\
+build_property.ProjectDir = C:\Users\danie\source\repos\Connect-4-tuff--main\Connect 4\Connect 4\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
